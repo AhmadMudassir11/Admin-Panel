@@ -1,6 +1,7 @@
 import User from '../Models/userModel.js'
 import bcrypt from 'bcryptjs'
 import jwt from 'jsonwebtoken'
+import jwt_decode from "jwt-decode";
 
  async function getAll(req,res) {
     try {
@@ -55,7 +56,7 @@ async function loginUser(req,res) {
        console.log(user.RoleId)
        const hash = user.password
        const verify = bcrypt.compareSync(pass, hash);
-       const token = jwt.sign({ UserId: user._id, roleId: user.RoleId }, "YOUR_SECRET_KEY");
+       const token = jwt.sign({ userId: user._id, roleId: user.roleId }, "YOUR_SECRET_KEY");
 
        if (verify) {
            return res
@@ -75,9 +76,14 @@ async function loginUser(req,res) {
 }
 
 async function privateRoute(req,res) {
-        res.status(200).json({
-            message:'Hello this route is protected',
-            user: { id: req.userId, role: req.userRole }
+    const token = req.cookies.access_token;
+    console.log(token)
+
+    const decoded = jwt_decode(token);
+    console.log(decoded)
+
+    res.status(200).json({
+            message:'Hello this route is protected'
         })
 }
 
