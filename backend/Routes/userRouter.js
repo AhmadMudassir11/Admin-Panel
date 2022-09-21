@@ -1,16 +1,33 @@
 import express from 'express';
-import multer from '../multer/multermiddleware.js'
+import multer from '../middlewares/multermiddleware.js'
+import tokenAuthentication from "../middlewares/tokenmiddleware.js";
 import userController from "../Controllers/userController.js";
 const router = express.Router();
 
-router
-    .route('/user')
-    .get(userController.getAll)
-    .post(multer,userController.createUser)
+// import multerForm from 'multer'
+// const upload = multer();
 
 router
-    .route('/user/:id')
+    .route('/')
+    .get(userController.getAll)
+    .post(multer,userController.RegisterUser)
+
+router
+    .route('/private')
+    .get(tokenAuthentication,userController.privateRoute)
+
+router
+    .route('/:id')
     .get(userController.findOne)
-    .patch(userController.updateUser)
+    .patch(multer,userController.updateUser)
+
+router
+    .route('/login')
+    .post(userController.loginUser)
+
+router
+    .route('/logout')
+    .post(userController.logoutUser)
+
 
 export default router
